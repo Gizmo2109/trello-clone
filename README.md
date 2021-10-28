@@ -1,5 +1,10 @@
 # watch-us-build-trello
 
+## Start program
+```
+npm run serve --fix
+```
+
 ## Project setup
 ```
 yarn install
