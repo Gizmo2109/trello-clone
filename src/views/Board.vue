@@ -1,0 +1,105 @@
+<template>
+  <div class="board">
+    <div class="flex flex-row items-start" onload="getColumns()">
+      <BoardColumn
+        v-for="(column, $columnIndex) of board.columns"
+        :key="$columnIndex"
+        :column="column"
+        :columnIndex="$columnIndex"
+        :board="board"
+      />
+
+      <div class="column flex">
+        <input
+          type="text"
+          class="p-2 mr-2 flex-grow"
+          placeholder="+ Neuer Column"
+          v-model="newColumnName"
+          @keyup.enter="createColumn"
+        >
+      </div>
+      <div>
+        <input
+        type="text"
+        class="p-2 mr-2 flex-grow"
+        placeholder="Column Name to delete"
+        v-model="testColumn"
+        @keyup.enter="deleteTaskOrColumn"
+        >
+      </div>
+      <button
+      @click="getColumns()"
+      >Test</button>
+    </div>
+
+    <div
+      class="task-bg"
+      v-if="isTaskOpen"
+      @click.self="close"
+    >
+      <router-view/>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+import BoardColumn from '@/components/BoardColumn'
+
+export default {
+  components: { BoardColumn },
+  data () {
+    return {
+      newColumnName: '',
+      testColumn: '',
+      testTask: ''
+    }
+  },
+  beforeMount() {
+    let $t
+    $t = this.$store.commit('API_GET')
+  },
+  computed: {
+    ...mapState(['board']),
+    isTaskOpen () {
+      return this.$route.name === 'task'
+    }
+  },
+  methods: {
+    close() {
+      this.$router.push({name: 'board'})
+    },
+    createColumn() {
+      if (this.newColumnName === '') {
+        alert('Eintrage net vergessen')
+      } else {
+        this.$store.commit('CREATE_COLUMN', {
+          name: this.newColumnName
+        })
+        this.newColumnName = ''
+      }
+    },
+    deleteTaskOrColumn() {
+      this.$store.commit('DELETE_COLUMN', {
+        name: this.testColumn
+      })
+      this.testColumn = ''
+    },
+    getColumns() {
+      this.$store.commit('API_GET')
+      console.log(this.board)
+    }
+  }
+}
+</script>
+
+<style lang="css">
+.board {
+  @apply p-4 bg-teal-dark h-full overflow-auto;
+}
+
+.task-bg {
+  @apply pin absolute;
+  background: rgba(0,0,0,0.5);
+}
+</style>
