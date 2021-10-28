@@ -1,4 +1,4 @@
-# trello-clon
+# trello-clone
 
 ## Start program
 ```
