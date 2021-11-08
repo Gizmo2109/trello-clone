@@ -55,9 +55,8 @@ export default {
       testTask: ''
     }
   },
-  beforeMount() {
-    let $t
-    $t = this.$store.commit('API_GET')
+  beforeMount () {
+    this.$store.commit('API_GET')
   },
   computed: {
     ...mapState(['board']),
@@ -66,10 +65,10 @@ export default {
     }
   },
   methods: {
-    close() {
-      this.$router.push({name: 'board'})
+    close () {
+      this.$router.push({ name: 'board' })
     },
-    createColumn() {
+    createColumn () {
       if (this.newColumnName === '') {
         alert('Eintrage net vergessen')
       } else {
@@ -79,13 +78,7 @@ export default {
         this.newColumnName = ''
       }
     },
-    deleteTaskOrColumn() {
-      this.$store.commit('DELETE_COLUMN', {
-        name: this.testColumn
-      })
-      this.testColumn = ''
-    },
-    getColumns() {
+    getColumns () {
       this.$store.commit('API_GET')
       console.log(this.board)
     }

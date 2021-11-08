@@ -7,8 +7,16 @@
     @dragenter.prevent
     @dragstart.self="pickupColumn($event, columnIndex)"
   >
-    <div class="flex items-center mb-2 font-bold">
+    <div class="flex items-center mb-2 font-bold" @mouseover="hover2 = true" @mouseleave="hover2 = false">
       {{ column.name }}
+      <div style="float: right;width: 30px">
+        <img
+          v-if="hover2"
+          src="https://www.awb-fds.de/wp-content/uploads/2019/11/icon-restmuell-750x750.png"
+          style="height: 30px;width: 30px"
+          @click.self="deleteColumn(column.id)"
+        >
+      </div>
     </div>
     <div class="list-reset">
       <ColumnTask
@@ -36,6 +44,11 @@ import ColumnTask from './ColumnTask'
 import movingTasksAndColumnsMixin from '@/mixins/movingTasksAndColumnsMixin'
 
 export default {
+  data() {
+    return {
+      hover2: false,
+    }
+  },
   components: { ColumnTask },
   mixins: [movingTasksAndColumnsMixin],
   methods: {
@@ -50,13 +63,17 @@ export default {
       if (e.target.value === '') {
         alert("Eintrag net vergessen")
       } else {
-        console.log()
         this.$store.commit('CREATE_TASK', {
           column,
           name: e.target.value
         })
         e.target.value = ''
       }
+    },
+    deleteColumn (id) {
+      this.$store.commit('DELETE_COLUMN', {
+        id
+      })
     }
   }
 }

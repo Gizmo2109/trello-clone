@@ -38,6 +38,7 @@ export default {
   data() {
     return {
       hover: false,
+      id: this.id
     }
   },
   props: {

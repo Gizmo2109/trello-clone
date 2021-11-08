@@ -5,6 +5,7 @@ import { saveStatePlugin, uuid } from './utils'
 import {counter} from "@fortawesome/fontawesome-svg-core";
 import {cli} from "tailwindcss/lib/cli/constants";
 import {content} from "@fullhuman/postcss-purgecss/__tests__/fixtures/src/config/config";
+import {stringify} from "querystring";
 const axios = require('axios').default
 
 Vue.use(Vuex)
@@ -31,15 +32,28 @@ export default new Vuex.Store({
   },
   mutations: {
     CREATE_TASK (state, { name, column }) {
-      axios.put('http://localhost:8080/columns/' + column.name, {
-        name
+      axios.post('http://localhost:8080/column/' + column.id, {
+        "name": name,
+        "description": '',
+        "id": uuid()
       })
         .then(response => {
-          console.log(response.data)
+          let test = state.board.columns.findIndex(x => x.name === column.name)
+          console.log(state.board.columns[test])
+          if (state.board.columns[test].tasks === undefined) {
+            state.board.columns[test].push({"tasks": []})
+          }
+          state.board.columns[test].tasks.push({"id": response.data.id, "description": response.data.description, "name": response.data.name})
         })
     },
-    DELETE_COLUMN (state, { name }) {
-      state.board.columns = state.board.columns.filter((column) => column.name !== name)
+    DELETE_COLUMN (state, id) {
+      let id2 = stringify(id)
+      let id3 = id2.slice(3)
+      axios.delete('http://localhost:8080/column/' + id3)
+        .then(response => {
+          console.log(response)
+        })
+      state.board.columns = state.board.columns.filter((column) => column.id !== id3)
     },
     DELETE_TASK (state, { column, task }) {
       const test = state.board.columns.findIndex(x => x.name === column)
@@ -48,6 +62,7 @@ export default new Vuex.Store({
 
       } else {
         state.board.columns[test].tasks.splice(test2, 1)
+
       }
     },
     DELETE_TASK_BY_ID (state, { task, column }) {
@@ -57,10 +72,12 @@ export default new Vuex.Store({
     CREATE_COLUMN (state, { name }) {
       axios.post('http://localhost:8080/board', {
         "name": name,
+        "id": uuid(),
+        "tasks": []
       })
         .then(response => {
           console.log(response.data)
-          state.board.columns.push({name: response.data.name, tasks: response.data.tasks})
+          state.board.columns.push({name: response.data.name, tasks: response.data.tasks, id: response.data.id})
         })
     },
     UPDATE_TASK (state, { task, key, value }) {
@@ -80,7 +97,6 @@ export default new Vuex.Store({
       axios.get('http://localhost:8080/board')
         .then(response => {
           state.board.columns = response.data._embedded.board
-          console.log(state.board)
         })
     }
   }
