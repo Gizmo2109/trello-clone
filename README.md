@@ -1,4 +1,9 @@
-# watch-us-build-trello
+# trello-clone
+
+## Start program
+```
+npm run serve --fix
+```
 
 ## Project setup
 ```
