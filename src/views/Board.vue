@@ -55,7 +55,7 @@ export default {
       testTask: ''
     }
   },
-  beforeMount () {
+  beforeCreate () {
     this.$store.commit('API_GET')
   },
   computed: {

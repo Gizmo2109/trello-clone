@@ -5,7 +5,7 @@
     @dragstart="pickupTask($event, taskIndex, columnIndex)"
     @dragover.prevent
     @dragenter.prevent
-    @drop.stop="moveTaskOrColumn($event, column.tasks, columnIndex, taskIndex)"
+    @drop.stop="moveTaskOrColumn($event, column, columnIndex, taskIndex)"
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
