@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Board from './views/Board.vue'
 import Task from './views/Task.vue'
+import Login from './views/Login.vue'
 
 Vue.use(Router)
 
@@ -10,9 +11,10 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
+      path: '/board/:boards',
       name: 'board',
       component: Board,
+      props: true,
       children: [
         {
           path: 'task/:id',
@@ -20,6 +22,11 @@ export default new Router({
           component: Task
         }
       ]
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
     }
   ]
 })

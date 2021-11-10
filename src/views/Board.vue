@@ -18,15 +18,6 @@
           @keyup.enter="createColumn"
         >
       </div>
-      <div>
-        <input
-        type="text"
-        class="p-2 mr-2 flex-grow"
-        placeholder="Column Name to delete"
-        v-model="testColumn"
-        @keyup.enter="deleteTaskOrColumn"
-        >
-      </div>
       <button
       @click="getColumns()"
       >Test</button>
@@ -48,6 +39,7 @@ import BoardColumn from '@/components/BoardColumn'
 
 export default {
   components: { BoardColumn },
+  props: ["boards"],
   data () {
     return {
       newColumnName: '',
@@ -55,8 +47,8 @@ export default {
       testTask: ''
     }
   },
-  beforeCreate () {
-    this.$store.commit('API_GET')
+  created () {
+    this.$store.commit('API_GET', this.boards)
   },
   computed: {
     ...mapState(['board']),
@@ -79,7 +71,7 @@ export default {
       }
     },
     getColumns () {
-      this.$store.commit('API_GET')
+      this.$store.commit('API_GET', this.boards)
       console.log(this.board)
     }
   }

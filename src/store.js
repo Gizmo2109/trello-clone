@@ -121,10 +121,26 @@ export default new Vuex.Store({
           console.log(response)
         })
     },
-    API_GET (state) {
-      axios.get('http://localhost:8080/board')
+    API_GET (state, boards) {
+      axios.get('http://localhost:8080/board/' + boards, {headers: {Authorization: 'Bearer ' + localStorage.getItem('key')}})
         .then(response => {
-          state.board.columns = response.data._embedded.board
+          console.log(response)
+          state.board.columns = response.data.test
+        })
+        .catch(error => {
+          if (error !== undefined) {
+            window.location.href = 'http://localhost:8082/login'
+          }
+        })
+    },
+    LOGIN (state, {username, password}) {
+      axios.post('http://localhost:8080/auth', {
+        "grant_type": "password",
+        "username": username,
+        "password": password
+      }, {headers: {Authorization: 'Basic aHVodToxMjM='}})
+        .then(response => {
+          localStorage.setItem('key', response.data.access_token)
         })
     }
   }
