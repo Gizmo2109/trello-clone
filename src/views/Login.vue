@@ -15,17 +15,29 @@
         Login
       </button>
     </form>
+    <board
+      v-for="(board2, $boardIndex) of boards"
+      :key = "$boardIndex"
+      :board2 = "board2"
+      :boardIndex = "$boardIndex"
+    />
   </div>
 </template>
 
 
 <script>
+import board from '@/components/board'
+
 export default {
+  components: { board },
   data () {
     return {
       username: '',
       password: ''
     }
+  },
+  props: {
+    boards: [],
   },
   methods: {
     login () {
@@ -33,6 +45,9 @@ export default {
           username: this.username,
           password: this.password
         })
+    },
+    getBoards () {
+      this.$store.commit('GET_BOARDS')
     }
   }
 

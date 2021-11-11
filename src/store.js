@@ -142,6 +142,12 @@ export default new Vuex.Store({
         .then(response => {
           localStorage.setItem('key', response.data.access_token)
         })
+    },
+    GET_BOARDS () {
+      axios.get('http://localhost:8080/board')
+        .then(response => {
+
+        })
     }
   }
 })
