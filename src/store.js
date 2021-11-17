@@ -11,11 +11,14 @@ const axios = require('axios').default
 Vue.use(Vuex)
 
 const board = JSON.parse(localStorage.getItem('board')) || defaultBoard
+const boards = []
+
 
 export default new Vuex.Store({
   plugins: [saveStatePlugin],
   state: {
-    board
+    board,
+    boards
   },
   getters: {
     getTask (state) {
@@ -39,7 +42,7 @@ export default new Vuex.Store({
                "id": uuid()},
       })
         .then(response => {
-          let test = state.board.columns.findIndex(x => x.name === column.name)
+          let test = state.board.columns.findIndex(x => x.id === column.id)
           if (state.board.columns[test].tasks === undefined) {
             state.board.columns[test].tasks = [{"id": response.data.task.id, "description": response.data.task.description, "name": response.data.task.name}]
             console.log(state.board)
@@ -68,9 +71,12 @@ export default new Vuex.Store({
     },
     CREATE_COLUMN (state, { name }) {
       axios.post('http://localhost:8080/column', {
-        "name": name,
-        "id": uuid(),
-        "tasks": []
+        board: board.name,
+        data: {
+          "name": name,
+          "id": uuid(),
+          "tasks": []
+        }
       })
         .then(response => {
           console.log(response)
@@ -90,15 +96,15 @@ export default new Vuex.Store({
     MOVE_TASK (state, { fromTasks, fromTasksID, toTasks, fromTaskIndex, toTaskIndex, toTasksID }) {
       const taskToMove = fromTasks.splice(fromTaskIndex, 1)[0]
       toTasks.splice(toTaskIndex, 0, taskToMove)
-      let columns = []
-      for (let test of state.board.columns) {
-        let tasks = []
-        for (let test2 of test.tasks) {
-          tasks.push({"name": test2.name, "id": test2.id, "description": test2.description})
-        }
-        columns.push({"name": test.name, "id": test.id, "tasks": tasks})
-      }
-      axios.put('http://localhost:8080/column', columns)
+      // let columns = []
+      // for (let test of state.board.columns) {
+      //   let tasks = []
+      //   for (let test2 of test.tasks) {
+      //     tasks.push({"name": test2.name, "id": test2.id, "description": test2.description})
+      //   }
+      //   columns.push({"name": test.name, "id": test.id, "tasks": tasks})
+      // }
+      axios.put('http://localhost:8080/column', state.board.columns)
         .then(response => {
           console.log(response)
         })
@@ -125,11 +131,13 @@ export default new Vuex.Store({
       axios.get('http://localhost:8080/board/' + boards, {headers: {Authorization: 'Bearer ' + localStorage.getItem('key')}})
         .then(response => {
           console.log(response)
-          state.board.columns = response.data.test
+          state.board.name = response.data.name
+          state.board.columns = response.data.columns
         })
         .catch(error => {
           if (error !== undefined) {
-            window.location.href = 'http://localhost:8082/login'
+            console.log(error)
+            window.location.href = 'http://localhost:8081/login'
           }
         })
     },
@@ -141,12 +149,18 @@ export default new Vuex.Store({
       }, {headers: {Authorization: 'Basic aHVodToxMjM='}})
         .then(response => {
           localStorage.setItem('key', response.data.access_token)
+          axios.get('http://localhost:8080/board', {headers: {Authorization: 'Bearer ' + localStorage.getItem('key')}})
+            .then(response => {
+              state.boards = response.data.boards
+              console.log(response)
+            })
         })
     },
-    GET_BOARDS () {
-      axios.get('http://localhost:8080/board')
+    GET_BOARDS (state) {
+      axios.get('http://localhost:8080/board', {headers: {Authorization: 'Bearer ' + localStorage.getItem('key')}})
         .then(response => {
-
+          state.boards = response.data.boards
+          console.log(response)
         })
     }
   }

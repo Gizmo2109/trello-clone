@@ -15,29 +15,25 @@
         Login
       </button>
     </form>
-    <board
-      v-for="(board2, $boardIndex) of boards"
-      :key = "$boardIndex"
-      :board2 = "board2"
-      :boardIndex = "$boardIndex"
-    />
+    <button type="submit" name="button" @click="getBoards()">
+      Für mich zugängliche Boards anzeigen
+    </button>
+    <div v-for="boardname in boards2">
+      <div @click="weiterLeit(boardname)">{{ boardname }}</div>
+    </div>
   </div>
 </template>
 
 
 <script>
-import board from '@/components/board'
 
 export default {
-  components: { board },
   data () {
     return {
       username: '',
-      password: ''
+      password: '',
+      boards2: []
     }
-  },
-  props: {
-    boards: [],
   },
   methods: {
     login () {
@@ -48,6 +44,16 @@ export default {
     },
     getBoards () {
       this.$store.commit('GET_BOARDS')
+      this.$store.watch(
+        () => {
+          return this.$store.state.boards
+        }, () => {
+          this.boards2 = this.$store.state.boards
+        }
+      )
+    },
+    weiterLeit (boardname) {
+      this.$router.push('/board/' + boardname)
     }
   }
 
